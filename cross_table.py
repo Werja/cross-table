@@ -23,7 +23,7 @@ led_num = width*height
 ################################################################
 screen = framebuf.FrameBuffer(bytearray(led_num),width,height,framebuf.GS8)
 stripe = neopixel.NeoPixel(Pin(neopixel_output_pin),led_num)
-cross_table = [0]*led_num
+cross_table = [0]*led_num   # all black
 
 ## make 240 rainbow RGB colors & 16 grayscale colors
 colors = [(0,0,0)]*256 
@@ -60,20 +60,20 @@ def make_cross_table():
                 changedir = True
                 ypos=ypos+2
                 xpos = xpos-1
-            if ypos == -1:
+            elif ypos == -1:
                 changedir = True
                 ypos=ypos+1
         else:
-            if xpos == -1:
-                changedir = True
-                xpos = xpos+1
             if ypos == height:
                 changedir = True
                 ypos=ypos-1
                 xpos=xpos+2
+            elif xpos == -1:
+                changedir = True
+                xpos = xpos+1
         if changedir:
             dir*=-1     # reverse direction
-            changedir = False   
+            changedir = False
         cross_table[(ypos*width)+xpos] = pos       
 make_cross_table()
     
@@ -81,15 +81,23 @@ def show_screen():
     for y in range(height):
         for x in range(width):
             stripe[cross_table[y*width+x]] = colors[screen.pixel(x,y)]
-            #print(screen.pixel(x,y),end=" ") # for debug mode
-        #print()                              #     -*-
+            '''
+            print(screen.pixel(x,y),end=" ") # for debug purpose
+        print()                              #     -*-
+    print()                                  #     -*-
+    '''
     stripe.write()
 
 ########################## start your program from here #######################
 
 # example
-screen.line(0,0,6,6,80) # diagonal green line 
+black = 255
+green = 80
+
+screen.fill(black)
+screen.line(0,0,width,height,green) # diagonal green line 
 show_screen()
 time.sleep(3)
-screen.fill(0)          # black
+screen.fill(black)          # black
 show_screen()
+
